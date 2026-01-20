@@ -1,0 +1,279 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > EmployerServiceImpl</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.example.employeemanagementsystem.service.impl</a>
+</div>
+
+<h1>Coverage Summary for Class: EmployerServiceImpl (com.example.employeemanagementsystem.service.impl)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">EmployerServiceImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    45.5%
+  </span>
+  <span class="absValue">
+    (5/11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    29.8%
+  </span>
+  <span class="absValue">
+    (14/47)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.example.employeemanagementsystem.service.impl;
+&nbsp;
+&nbsp;import com.example.employeemanagementsystem.entity.Department;
+&nbsp;import com.example.employeemanagementsystem.exception.EmployerNotFoundException;
+&nbsp;import com.example.employeemanagementsystem.mapper.DepartmentMapper;
+&nbsp;import com.example.employeemanagementsystem.mapper.EmployerMapper;
+&nbsp;import com.example.employeemanagementsystem.model.dto.EmployerRequestDto;
+&nbsp;import com.example.employeemanagementsystem.model.dto.EmployerResponseDto;
+&nbsp;import com.example.employeemanagementsystem.repository.DepartmentRepository;
+&nbsp;import com.example.employeemanagementsystem.repository.EmployerRepository;
+&nbsp;import com.example.employeemanagementsystem.entity.Employer;
+&nbsp;import com.example.employeemanagementsystem.model.dto.EmployerPatchRequest;
+&nbsp;import com.example.employeemanagementsystem.service.EmployerService;
+&nbsp;import lombok.RequiredArgsConstructor;
+&nbsp;import org.springframework.data.domain.Page;
+&nbsp;import org.springframework.data.domain.Pageable;
+&nbsp;import org.springframework.data.domain.Sort;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Optional;
+&nbsp;
+&nbsp;@Service
+&nbsp;@RequiredArgsConstructor
+&nbsp;public class EmployerServiceImpl implements EmployerService {
+&nbsp;
+&nbsp;
+&nbsp;    private final EmployerRepository employerRepository;
+&nbsp;    private final EmployerMapper employerMapper;
+&nbsp;    private final DepartmentRepository departmentRepository;
+&nbsp;    private final DepartmentMapper departmentMapper;
+&nbsp;
+&nbsp;    //private JsonMapper jsonMapper;
+&nbsp;
+&nbsp;   /* @Autowired
+&nbsp;    public EmployerServiceImpl(EmployerRepository employerRepository)
+&nbsp;    {
+&nbsp;        this.employerRepository=employerRepository;
+&nbsp;       // this.jsonMapper=jsonMapper;
+&nbsp;    }*/
+&nbsp;    @Override
+&nbsp;    public EmployerResponseDto save(EmployerRequestDto employerRequestDto) {
+&nbsp;
+<b class="fc">&nbsp;        Department department = departmentRepository.findById(employerRequestDto.getDepartmentId()).orElseThrow(()-&gt;new EmployerNotFoundException(&quot;Department Not Found&quot;));</b>
+<b class="fc">&nbsp;        Employer employer=employerMapper.toEmployee(employerRequestDto);</b>
+<b class="fc">&nbsp;        employer.setDepartment(department);</b>
+<b class="fc">&nbsp;        return employerMapper.toEmployeeResponseDto(employerRepository.save(employer));</b>
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public EmployerResponseDto findById(int id) {
+<b class="fc">&nbsp;      Employer employer=employerRepository.findById(id).orElseThrow(() -&gt; new EmployerNotFoundException(&quot;Employer not found with id: &quot; + id));</b>
+<b class="fc">&nbsp;      return  employerMapper.toEmployeeResponseDto(employer);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public  Page&lt;EmployerResponseDto&gt; findAll(Pageable pageable) {
+<b class="fc">&nbsp;      return employerRepository.findAll(pageable)</b>
+<b class="fc">&nbsp;                .map(employer -&gt; employerMapper.toEmployeeResponseDto(employer));</b>
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public EmployerResponseDto partialUpdate(int id, EmployerPatchRequest patchPayload)
+&nbsp;    {
+<b class="nc">&nbsp;        Employer employer=employerRepository.findById(id).orElseThrow(() -&gt; new EmployerNotFoundException(&quot;Employer not found with id: &quot; + id));</b>
+&nbsp;
+<b class="nc">&nbsp;        if (patchPayload.getEmail()!=null)</b>
+&nbsp;        {
+<b class="nc">&nbsp;            employer.setEmail(patchPayload.getEmail());</b>
+&nbsp;        }
+<b class="nc">&nbsp;        if (patchPayload.getName()!=null)</b>
+&nbsp;        {
+<b class="nc">&nbsp;            employer.setName(patchPayload.getName());</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return employerMapper.toEmployeeResponseDto(employerRepository.save(employer));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public void deleteById(int id) {
+<b class="fc">&nbsp;        if(!employerRepository.existsById(id))</b>
+&nbsp;        {
+<b class="fc">&nbsp;            throw new EmployerNotFoundException(&quot;Not Found &quot;+ id );</b>
+&nbsp;        }
+<b class="fc">&nbsp;        employerRepository.deleteById(id);</b>
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public EmployerResponseDto fullyUpdate(int id, EmployerRequestDto employerCreateRequest) {
+<b class="nc">&nbsp;        Employer employer=employerRepository.findById(id).orElseThrow(() -&gt; new EmployerNotFoundException(&quot;Employer with this id not found &quot;+id));</b>
+&nbsp;      //  employer.setDepartment(employerCreateRequest.getDepartment());
+<b class="nc">&nbsp;        employer.setPassword(employerCreateRequest.getPassword());</b>
+<b class="nc">&nbsp;        employer.setEmail(employerCreateRequest.getEmail());</b>
+<b class="nc">&nbsp;        employer.setName(employerCreateRequest.getName());</b>
+&nbsp;       // return new EmployerResponseDto(employerRepository.save(employer));
+<b class="nc">&nbsp;        return employerMapper.toEmployeeResponseDto(employerRepository.save(employer));</b>
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public List&lt;EmployerResponseDto&gt; findDyName(String name) {
+<b class="fc">&nbsp;        if(employerRepository.findDyName(name).isEmpty())</b>
+&nbsp;        {
+<b class="nc">&nbsp;            throw new EmployerNotFoundException(&quot;This name Dose not exist&quot;);</b>
+&nbsp;        }
+<b class="fc">&nbsp;       List&lt;Employer&gt;employerList= employerRepository.findDyName(name);</b>
+<b class="fc">&nbsp;        return employerList.stream().map(employer -&gt; employerMapper.toEmployeeResponseDto(employer)).toList();</b>
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;    public Sort buildSort(String sortParam) {
+&nbsp;
+<b class="nc">&nbsp;        if (sortParam == null || sortParam.isBlank()) {</b>
+<b class="nc">&nbsp;            return Sort.by(Sort.Order.asc(&quot;id&quot;)); // default sort</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        List&lt;Sort.Order&gt; orders = new ArrayList&lt;&gt;();</b>
+&nbsp;
+<b class="nc">&nbsp;        String[] fields = sortParam.split(&quot;,&quot;);</b>
+&nbsp;
+<b class="nc">&nbsp;        for (String field : fields) {</b>
+&nbsp;
+<b class="nc">&nbsp;            char direction = field.charAt(0);</b>
+<b class="nc">&nbsp;            String property = field.substring(1);</b>
+&nbsp;
+<b class="nc">&nbsp;            validateSortField(property);</b>
+&nbsp;
+<b class="nc">&nbsp;            if (direction == &#39;+&#39;) {</b>
+<b class="nc">&nbsp;                orders.add(Sort.Order.asc(property));</b>
+<b class="nc">&nbsp;            } else if (direction == &#39;-&#39;) {</b>
+<b class="nc">&nbsp;                orders.add(Sort.Order.desc(property));</b>
+&nbsp;            } else {
+<b class="nc">&nbsp;                throw new IllegalArgumentException(</b>
+&nbsp;                        &quot;Invalid sort format. Use +field or -field&quot;
+&nbsp;                );
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        return Sort.by(orders);</b>
+&nbsp;    }
+&nbsp;    public void validateSortField(String field) {
+<b class="nc">&nbsp;        List&lt;String&gt; allowedFields = List.of(</b>
+&nbsp;                &quot;id&quot;,
+&nbsp;                &quot;name&quot;,
+&nbsp;                &quot;email&quot;,
+&nbsp;                &quot;salary&quot;,
+&nbsp;                &quot;jobTitle&quot;,
+&nbsp;                &quot;department.name&quot;
+&nbsp;        );
+&nbsp;
+<b class="nc">&nbsp;        if (!allowedFields.contains(field)) {</b>
+<b class="nc">&nbsp;            throw new IllegalArgumentException(</b>
+&nbsp;                    &quot;Invalid sort field: &quot; + field
+&nbsp;            );
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    public int sumTwoNum(int x,int y)
+&nbsp;    {
+<b class="nc">&nbsp;        return (x+y);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public boolean CheckIfNull(Object o)
+&nbsp;    {
+<b class="nc">&nbsp;        if(o==null)</b>
+&nbsp;        {
+<b class="nc">&nbsp;            return true;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return false;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-01-18 11:24</div>
+</div>
+</body>
+</html>
